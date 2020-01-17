@@ -7,14 +7,15 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	public class Teleport : MonoBehaviour
     {
+        [SerializeField] private List<Rigidbody> m_Rigidbodies;
         public SteamVR_Action_Boolean teleportAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Teleport");
-
         public LayerMask traceLayerMask;
 		public LayerMask floorFixupTraceLayerMask;
 		public float floorFixupMaximumTraceDistance = 1.0f;
@@ -860,8 +861,8 @@ namespace Valve.VR.InteractionSystem
 
 			TeleportPoint teleportPoint = teleportingToMarker as TeleportPoint;
 			Vector3 teleportPosition = pointedAtPosition;
-
-			if ( teleportPoint != null )
+            FreezeRigidbody();
+            if ( teleportPoint != null )
 			{
 				teleportPosition = teleportPoint.transform.position;
 
@@ -1155,5 +1156,26 @@ namespace Valve.VR.InteractionSystem
 				return hand.transform;
 			}
 		}
-	}
+        
+        private void FreezeRigidbody()
+        {
+            for (int i = 0; i < m_Rigidbodies.Count; i++)
+            {
+                m_Rigidbodies[i].isKinematic = true;
+            }
+        }
+
+        private void UnFreezeRigidBody()
+        {
+            for (int i = 0; i < m_Rigidbodies.Count; i++)
+            {
+                m_Rigidbodies[i].isKinematic = false;
+            }
+        }
+
+        private void LateUpdate()
+        {
+            UnFreezeRigidBody();
+        }
+    }
 }

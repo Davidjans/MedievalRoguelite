@@ -69,6 +69,7 @@ namespace Valve.VR.InteractionSystem
         [Tooltip("An array of child gameObjects to not render a highlight for. Things like transparent parts, vfx, etc.")]
         public GameObject[] hideHighlight;
 
+        [SerializeField] private GameObject child;
 
         [System.NonSerialized]
         public Hand attachedToHand;
@@ -273,6 +274,8 @@ namespace Valve.VR.InteractionSystem
 
         protected virtual void OnAttachedToHand(Hand hand)
         {
+            child.layer = 8;
+            gameObject.layer = 8;
             if (activateActionSetOnAttach != null)
                 activateActionSetOnAttach.Activate(hand.handType);
 
@@ -285,12 +288,15 @@ namespace Valve.VR.InteractionSystem
             {
                 hand.skeleton.BlendToPoser(skeletonPoser, blendToPoseTime);
             }
+            
 
             attachedToHand = hand;
         }
 
         protected virtual void OnDetachedFromHand(Hand hand)
         {
+            child.layer = 0;
+            gameObject.layer = 0;
             if (activateActionSetOnAttach != null)
             {
                 if (hand.otherHand == null || hand.otherHand.currentAttachedObjectInfo.HasValue == false ||
@@ -312,7 +318,7 @@ namespace Valve.VR.InteractionSystem
                 if (hand.skeleton != null)
                     hand.skeleton.BlendToSkeleton(releasePoseBlendTime);
             }
-
+            
             attachedToHand = null;
         }
 
